@@ -8,33 +8,30 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kelsi.commands.reloadCMD;
 
-public final class waterdead extends JavaPlugin implements Listener {
+public final class WaterDead extends JavaPlugin implements Listener {
 
     boolean enabled = getConfig().getBoolean("plugin.enabled");
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        getServer().getPluginManager().registerEvents(this, this);
         getConfig().options().copyDefaults(true);
         saveConfig();
         reloadConfig();
-        getCommand("wdreload").setExecutor(new reloadCMD());
+        
+        getServer().getPluginManager().registerEvents(this, this);
+        getCommand("wdreload").setExecutor(new ReloadCMD());
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        super();
     }
 
     @EventHandler
     public void onPlayerMove(final PlayerMoveEvent event) {
-        if (enabled) {
-            Material m = event.getPlayer().getLocation().getBlock().getType();
-            Player player = event.getPlayer();
-            if (m == Material.WATER) {
-                player.damage(getConfig().getDouble("plugin.damage"));
-            }
+        if (!enabled) return;
+        if (event.getPlayer().getLocation().getBlock().getType() == Material.WATER) {
+            event.getPlayer().damage(getConfig().getDouble("plugin.damage"));
         }
     }
 }
